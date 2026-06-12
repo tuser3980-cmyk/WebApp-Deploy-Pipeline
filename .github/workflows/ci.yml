@@ -1,0 +1,15 @@
+name: CI Pipeline
+on:  
+  pull_request:
+    branches: [ develop, main ]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Linting code..."
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      -run: echo "Running tests..."
