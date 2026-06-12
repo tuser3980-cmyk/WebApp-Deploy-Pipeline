@@ -1,0 +1,41 @@
+name: CD Pipeline
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: echo "Building for ${{ matrix.arch }}" > build-${{ matrix.arch }}.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.arch }}
+          path: build-${{ matrix.arch }}.txt
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to Staging
+        run: |
+          echo "Deploying to ${{ vars.DEPLOY_HOST }}"
+          echo "Using API Key: ${{ secrets.DEPLOY_API_KEY }}"
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to ${{ vars.DEPLOY_HOST }}"
+          echo "Using API Key: ${{ secrets.DEPLOY_API_KEY }}"
+    
+        
